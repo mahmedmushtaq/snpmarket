@@ -39,7 +39,7 @@ export default props=>{
         <Grid container direction={"column"}>
 
 
-        <Grid  item container style={{marginTop:100,}}>
+        <Grid  item container >
          <Grid item>
              <Typography style={{margin:"0 10px 0 0"}}>
                 All

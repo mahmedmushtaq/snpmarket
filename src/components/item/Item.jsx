@@ -11,9 +11,11 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
-
+import {Link} from "react-router-dom";
 import ShareIcon from '@material-ui/icons/Share';
 import Button from "@material-ui/core/Button";
+import test1  from "../../assets/images/test1.png";
+
 const useStyles = makeStyles((theme) => ({
     root: {
         maxWidth: 345,
@@ -38,35 +40,33 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function RecipeReviewCard() {
+export default function ProductItem(props) {
     const classes = useStyles();
-    const [expanded, setExpanded] = React.useState(false);
+    const {product} = props;
 
-    const handleExpandClick = () => {
-        setExpanded(!expanded);
-    };
 
     return (
         <Card className={classes.root}>
             <CardHeader
                 avatar={
                     <Avatar aria-label="recipe" className={classes.avatar}>
-                        R
+                      M
                     </Avatar>
                 }
 
-                title="Shrimp and Chorizo Paella"
-                subheader="September 14, 2016"
+                title={!product.profileName ? "M Ahmed Mushtaq" : product.profileName}
+                subheader={product.developedAt ? "developing" : undefined}
             />
             <CardMedia
                 className={classes.media}
-                image="/static/images/cards/paella.jpg"
-                title="Paella dish"
+                image={product.mainImage}
+                title="Product main"
             />
             <CardContent>
                 <Typography variant="body2" color="textSecondary" component="p">
-                    This impressive paella is a perfect party dish and a fun meal to cook together with your
-                    guests. Add 1 cup of frozen peas along with the mussels, if you like.
+                    {
+                        product.shortDescription
+                    }
                 </Typography>
             </CardContent>
             <CardActions disableSpacing>
@@ -75,7 +75,7 @@ export default function RecipeReviewCard() {
                     <ShareIcon />
                 </IconButton>
 
-                <Button>Open</Button>
+                <Button component={Link} to={"/item-details/"+product._id}>Open</Button>
             </CardActions>
 
         </Card>

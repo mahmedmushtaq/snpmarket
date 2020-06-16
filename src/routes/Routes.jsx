@@ -2,20 +2,29 @@ import React from 'react';
 import {ThemeProvider} from "@material-ui/styles";
 import {Switch, Route, BrowserRouter} from "react-router-dom";
 import theme from "../themes/theme";
-import {Home} from "../pages";
+import {About, Contact, Blog, Details, Developing, Home, BlogDetails} from "../pages";
 import {TopBar} from "../components";
-import {Grid} from "@material-ui/core";
-
+import {Grid, useMediaQuery} from "@material-ui/core";
+import {useTheme} from "@material-ui/core";
 
 
 function App() {
+    const materialUiTheme = useTheme();
+    const xs = useMediaQuery(materialUiTheme.breakpoints.down("xs"));
   return (
 
-    <ThemeProvider theme={theme} >
+    <ThemeProvider theme={theme}>
        <BrowserRouter>
            <TopBar/>
-           <div style={{width:"90%",margin:"auto"}}>
+           <br/><br/><br/><br/><br/><br/>
+           <div style={{width:!xs ? "90%":undefined,textAlign:xs?"center":undefined,margin:"auto "}}>
            <Switch>
+               <Route exact path={"/blog-details"} component={BlogDetails}/>
+               <Route  path={"/item-details/:id"} component={Details}/>
+               <Route exact path={"/about"} component={About}/>
+               <Route exact path={"/contact"} component={Contact}/>
+               <Route exact path={"/blog"} component={Blog}/>
+               <Route exact path={"/developing"} component={Developing}/>
                <Route path={"/"} component={Home}/>
            </Switch>
            </div>
