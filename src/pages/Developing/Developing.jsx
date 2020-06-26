@@ -1,18 +1,30 @@
-import React, {useCallback, useEffect} from "react";
-import {Grid,Typography} from "@material-ui/core";
+import React, {useCallback, useEffect, useState} from "react";
+import {Button, Grid, Typography} from "@material-ui/core";
 import {Item} from "../../components";
 import {useDispatch, useSelector} from "react-redux";
-import {loadDevelopingProducts} from "../../store/actions/products";
+import {loadProducts, loadDevelopingProducts} from "../../store/actions/products";
 
 
 export default props=>{
     const dispatch = useDispatch();
     const developingProducts = useSelector(store=>store.products.developingProducts);
     const loading  = useSelector(store=>store.products.loadDevelopingProducts);
+    const [page,setPage] = useState(0);
+    const [pageLoadingMsg,setPageLoadingMsg] = useState("");
+
+
+
+    const loadMore = async ()=>{
+        setPageLoadingMsg("Please wait...");
+        await dispatch(loadDevelopingProducts(page));
+        setPageLoadingMsg("");
+        setPage(page=>(page+1))
+    }
 
     const loadProducts= useCallback(async ()=>{
         if(developingProducts.length === 0){
            await dispatch(loadDevelopingProducts())
+            setPage(page=>(page+1));
         }
     },[]);
 
@@ -44,6 +56,14 @@ export default props=>{
 
                 </Grid>
             </Grid>
+
+            <Grid item style={{margin:"30px auto"}}>
+                <Button variant={"contained"} color={"primary"} onClick={loadMore} >Load More</Button>
+                {
+                    pageLoadingMsg ? pageLoadingMsg : ""
+                }
+            </Grid>
+
         </Grid>
     )
 }

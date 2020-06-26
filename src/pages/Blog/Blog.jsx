@@ -1,20 +1,43 @@
-import React from "react";
-import {Grid,Divider,Button, Typography, useMediaQuery} from "@material-ui/core";
-import test1 from "../../assets/images/test1.png";
-import {makeStyles,useTheme} from "@material-ui/styles";
-import {Link} from "react-router-dom";
+import React, {useCallback, useEffect, useState} from "react";
+import {Button, Grid, Typography} from "@material-ui/core";
 
-const useStyles = makeStyles(theme=>({
-    blogMainImg:{
-        width:150,
-        height:150,
-    }
-}));
+import {useDispatch, useSelector} from "react-redux";
+import {loadBlogs} from "../../store/actions/blogs";
+import {BlogItem} from "../../components";
+
+
+
+
+
+
 
 export default props=>{
-    const classes = useStyles();
-    const theme = useTheme();
-    const xs = useMediaQuery(theme.breakpoints.down("xs"));
+
+
+    const dispatch = useDispatch();
+    const {blogsList,blogsLoading} = useSelector(store=>store.blogs);
+    const [page,setPage] = useState(0);
+    const [pageLoadingMsg,setPageLoadingMsg] = useState("");
+
+    const loadMore = async ()=>{
+        setPageLoadingMsg("Please wait...");
+        await dispatch(loadBlogs(page));
+        setPageLoadingMsg("");
+        setPage(page=>(page+1))
+    }
+
+
+    const loadBlogList = useCallback(async ()=>{
+        if(blogsList.length === 0){
+            await dispatch(loadBlogs());
+            setPage(page=>(page+1));
+        }
+    },[dispatch])
+
+
+    useEffect(()=>{
+        loadBlogList();
+    },[loadBlogList])
 
     return(
         <Grid container direction={"column"} alignItems={"center"} justify={"center"}>
@@ -25,70 +48,22 @@ export default props=>{
 
             {/* =============== first part ==================== */}
 
-            <React.Fragment>
-
-            <Divider orientation={"horizontal"} style={{width:'100%',height:1}}/>
-            <br/><br/>
-
-            <Grid item container  direction={xs ? "column" : "row"} justify={xs ? "center" : undefined} alignItems={xs ? "center" : undefined}>
-                <Grid item>
-                    <img src={test1} className={classes.blogMainImg}/>
-                </Grid>
-                <Grid item style={{width:"70%",marginLeft:25,padding:"5px 20px",}}>
-                    <Typography variant={"h5"} style={{}}>How to start a business?</Typography>
-                    <br/>
-                    <Typography component={"p"}>
-                        We’re releasing Safety Gym, a suite of environments and tools for measuring progress towards reinforcement
-                        learning agents which respect safety constraints while training.
-                    </Typography>
-                    <br/>
-
-                    <Button  color={"primary"} component={Link} to={"/blog-details"} style={{color:'red'}}>Read More</Button>
-
-                </Grid>
-                <Grid item style={{marginTop:10,}}>
-                    <Typography component={"p"}>12 November 2019</Typography>
-                </Grid>
+            {
+                blogsLoading ? "please wait ..." : blogsList.length === 0 ? "No blog is found" :  blogsList.map(blog=>(
+                   <BlogItem key={blog._id} blog={blog}/>
+               ))
+            }
 
 
+            <Grid item style={{margin:"30px auto"}}>
+                <Button variant={"contained"} color={"primary"} onClick={loadMore} >Load More</Button>
+                {
+                    pageLoadingMsg ? pageLoadingMsg : ""
+                }
             </Grid>
 
-            <br/><br/>
-            </React.Fragment>
 
 
-            {/* =============== second part ==================== */}
-
-            <React.Fragment>
-
-                <Divider orientation={"horizontal"} style={{width:'100%',height:1}}/>
-                <br/><br/>
-
-                <Grid item container  direction={xs ? "column" : "row"} justify={xs ? "center" : undefined} alignItems={xs ? "center" : undefined}>
-                    <Grid item>
-                        <img src={test1} className={classes.blogMainImg}/>
-                    </Grid>
-                    <Grid item style={{width:"70%",marginLeft:25,padding:"5px 20px",}}>
-                        <Typography variant={"h5"} style={{}}>How to start a business?</Typography>
-                        <br/>
-                        <Typography component={"p"}>
-                            We’re releasing Safety Gym, a suite of environments and tools for measuring progress towards reinforcement
-                            learning agents which respect safety constraints while training.
-                        </Typography>
-                        <br/>
-
-                        <Button  color={"primary"} style={{color:'red'}} component={Link} to={"/blog-details"}>Read More</Button>
-
-                    </Grid>
-                    <Grid item style={{marginTop:10,}}>
-                        <Typography component={"p"}>12 November 2019</Typography>
-                    </Grid>
-
-
-                </Grid>
-
-                <br/><br/>
-            </React.Fragment>
 
         </Grid>
     )

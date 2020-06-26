@@ -1,4 +1,4 @@
-import {ADD_DEVELOPING_PRODUCTS, ADD_PRODUCTS} from "../actions/products";
+import {LOAD_DEVELOPING_PRODUCTS, LOAD_PRODUCTS} from "../actions/products";
 
 const initialState = {
     productsList:[],
@@ -9,14 +9,14 @@ const initialState = {
 
 export default (state=initialState,actions)=>{
     switch (actions.type) {
-        case ADD_PRODUCTS:
+        case LOAD_PRODUCTS:
 
             return{
                 ...state,
                 productsList: [...state.productsList,...actions.payload],
                 loadSimpleProducts: false,
             }
-        case ADD_DEVELOPING_PRODUCTS:
+        case LOAD_DEVELOPING_PRODUCTS:
             return{
                 ...state,
                 developingProducts: [...state.developingProducts,...actions.payload],

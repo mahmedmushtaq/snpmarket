@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from "react";
-import {Grid,Typography,Button} from "@material-ui/core";
-import {makeStyles} from "@material-ui/styles";
-import test1 from "../../assets/images/test1.png";
+import {Grid, Typography, Button, useMediaQuery} from "@material-ui/core";
+import {makeStyles, useTheme} from "@material-ui/styles";
+import printHtml from "html-react-parser";
 import axios from "axios";
 import url from "../../others/baseUrl";
 
@@ -23,9 +23,17 @@ const useStyles = makeStyles(theme=>({
        rightDiv:{
            padding:"10px 30px 0 30px",
            width:600,
+
            [theme.breakpoints.down("md")]:{
                width:400,
-           }
+
+           },
+
+           [theme.breakpoints.down("sm")]:{
+               width:"90vw",
+
+           },
+
        },
     imgGallery:{
              width:100,
@@ -52,21 +60,38 @@ const useStyles = makeStyles(theme=>({
 }));
 export default props=>{
     const classes = useStyles();
-    const id = props.match.params.id;
+    const slug = props.match.params.slug;
     const [showDescription,setShowDescription] = useState(true);
     const [showMoreInfo,setShowMoreInfo] = useState(false);
-
+    const [loading,setLoading] = useState(true);
+    const theme = useTheme();
+    const sm = useMediaQuery(theme.breakpoints.down("sm"));
+    const [detail,setDetail] = useState('');
     const [product,setProduct] = useState('');
 
+
     const loadSingleData = useCallback(async ()=>{
-        const res = await axios.get(url.baseURI+"/product/details/"+id);
+        const res = await axios.get(url.baseURI+"/product/details/"+slug);
+        const productDetailedInfoRes = await axios.get(url.contentUrl+"/api/product/product_detailed_info/"+res.data.longDescriptionLinkId);
+
+
+
+        setDetail(productDetailedInfoRes.data);
+
         setProduct(res.data);
+        setLoading(false);
 
     },[]);
 
     useEffect(()=>{
         loadSingleData();
     },[loadSingleData]);
+
+    if(loading){
+        return <div>Please wait ...</div>
+    }else if(!product){
+        return <div>404 error occur</div>
+    }
 
 
     return(
@@ -75,12 +100,13 @@ export default props=>{
 
 
             <Grid item >
-                <Grid container    justify={"center"} alignItems={"center"}>
+                <Grid container direction={sm ? "column": 'row'}    justify={"center"} alignItems={"center"}>
                     <Grid item >
-                        <img className={classes.itemLargeImg} src={product ? product.mainImage : ""} alt=""/>
+                        <img className={classes.itemLargeImg} src={url.contentUrl+"/"+product.mainImage} alt=""/>
                     </Grid>
-                    <Grid item container className={classes.rightDiv}>
+                    <Grid item   direction={sm ? "column": 'row'}  className={classes.rightDiv}>
 
+                        <Grid container>
                         <Grid item>
                             <Typography variant={"h5"}>{
                                 product ? product.title : "..."
@@ -100,9 +126,15 @@ export default props=>{
 
                         <Grid item>
                             <br/>
-                            <Button color={"primary"} component={"a"} href={product.link} variant={"outlined"}>Download it</Button>
-                        </Grid>
+                            {
+                                !product.link.match("uploads/products/zip") ? (
+                                    <Button color={"primary"} component={"a"} href={product.link} variant={"outlined"}>Open url</Button>
+                                ):  <Button color={"primary"} component={"a"} href={url.contentUrl+"/"+product.link} variant={"outlined"}>Download it</Button>
 
+                            }
+
+                        </Grid>
+                        </Grid>
 
                     </Grid>
 
@@ -112,7 +144,7 @@ export default props=>{
             <Grid item style={{marginRight:'auto',marginLeft:20,}}>
                 <br/><br/><br/>
                 {
-                    product.imageGallery ? product.imageGallery.map((img,i)=>( <img key={i} src={img}  className={classes.imgGallery} alt=""/>)): ""
+                     product.imagesGallery.map((img,i)=>( <img key={i} src={url.contentUrl+"/"+img}  className={classes.imgGallery} alt=""/>))
                 }
 
             </Grid>
@@ -120,7 +152,7 @@ export default props=>{
 
 
 
-            <Grid item className={classes.border} style={{cursor:'pointer'}}>
+            <Grid item className={classes.border} style={{cursor:'pointer',}}>
                <Grid container justify={"center"} >
                     <Grid item className={classes.more}>
                         <Typography variant={"h6"} onClick={()=>{setShowDescription(true);setShowMoreInfo(false);}}>
@@ -145,7 +177,7 @@ export default props=>{
                     <br/>
                     <Typography component={"p"}>
                         {
-                            product ? product.longDescription : ""
+                           printHtml(detail)
                         }
                     </Typography>
                 </Grid>) : ""

@@ -6,3 +6,6 @@ export {default as Resources} from "./Resources";
 export {default as Contact} from "./Contact";
 export {default as Blog} from "./Blog";
 export {default as BlogDetails} from "./blogdetails";
+export {default as Login} from "./Login";
+export {default as AddNewBlog} from "../pages/AddNewBlog";
+export {default as AddNewProduct} from "../pages/AddNewProduct";

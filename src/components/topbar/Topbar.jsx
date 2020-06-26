@@ -19,7 +19,8 @@ const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
         position:'fixed',
-        width:'100vw',
+        width:'100%',
+        backgroundColor:'white',
         top:0,
 
 
@@ -144,7 +145,7 @@ export default function SearchAppBar() {
 
                                <List>
                                    {menuList.map((text, index) => (
-                                       <ListItem button key={text.id}>
+                                       <ListItem component={Link} to={text.to} button key={text.id}>
                                            <ListItemIcon>{text.icon}</ListItemIcon>
                                            <ListItemText primary={text.name} />
                                        </ListItem>

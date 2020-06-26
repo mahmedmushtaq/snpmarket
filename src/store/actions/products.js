@@ -1,19 +1,19 @@
-export const ADD_PRODUCTS = "ADD_PRODUCTS";
-export const ADD_DEVELOPING_PRODUCTS = "ADD_DEVELOPING_PRODUCTS";
+export const LOAD_PRODUCTS = "ADD_PRODUCTS";
+export const LOAD_DEVELOPING_PRODUCTS = "ADD_DEVELOPING_PRODUCTS";
 
-export const addProducts = ()=>async (dispatch,getState,axios)=>{
-   const res = await axios.get("/product/list/developed");
+export const loadProducts = (page)=>async (dispatch, getState, axios)=>{
+   const res = await axios.get("/product/list?status=developed&page="+page);
 
    dispatch({
-      type:ADD_PRODUCTS,
+      type:LOAD_PRODUCTS,
       payload:res.data,
    })
 }
 
-export const loadDevelopingProducts = ()=>async (dispatch,getState,axios)=>{
-   const res = await axios.get("/product/list/developing");
+export const loadDevelopingProducts = (page)=>async (dispatch,getState,axios)=>{
+   const res = await axios.get("/product/list?status=developing&page="+page);
    dispatch({
-      type:ADD_DEVELOPING_PRODUCTS,
+      type:LOAD_DEVELOPING_PRODUCTS,
       payload:res.data,
    })
 }

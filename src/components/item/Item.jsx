@@ -15,6 +15,9 @@ import {Link} from "react-router-dom";
 import ShareIcon from '@material-ui/icons/Share';
 import Button from "@material-ui/core/Button";
 import test1  from "../../assets/images/test1.png";
+import EditIcon from '@material-ui/icons/Edit';
+import {useSelector} from "react-redux";
+import url from "../../others/baseUrl";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -43,6 +46,8 @@ const useStyles = makeStyles((theme) => ({
 export default function ProductItem(props) {
     const classes = useStyles();
     const {product} = props;
+    const {user} = useSelector(store=>store.user);
+    const authority = user.authority ? user.authority : "auth_required";
 
 
     return (
@@ -59,10 +64,15 @@ export default function ProductItem(props) {
             />
             <CardMedia
                 className={classes.media}
-                image={product.mainImage}
+                image={url.contentUrl+"/"+product.mainImage}
                 title="Product main"
             />
             <CardContent>
+                <Typography variant={"h2"} style={{fontSize:18,fontWeight:800,color:'black'}}>
+                    {
+                        product.title.length > 30 ? product.title.substr(0,30)+"..." : product.title
+                    }
+                </Typography>
                 <Typography variant="body2" color="textSecondary" component="p">
                     {
                         product.shortDescription
@@ -73,9 +83,19 @@ export default function ProductItem(props) {
 
                 <IconButton aria-label="share">
                     <ShareIcon />
+
                 </IconButton>
 
-                <Button component={Link} to={"/item-details/"+product._id}>Open</Button>
+                {
+                    authority === 'admin' ? (
+                        <IconButton component={Link} to={"/admin/VTStzKzBcgsICKswVxyG/new-product/"+product.slug} aria-label={"edit"}>
+                            <EditIcon />
+                        </IconButton>
+                    ):""
+                }
+
+
+                <Button component={Link} to={"/item/"+product.slug}>Open</Button>
             </CardActions>
 
         </Card>
